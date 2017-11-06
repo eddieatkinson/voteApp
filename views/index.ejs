@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title> Vote App </title>
+	<title>Rock or Not</title>
 	<% include head %>
 </head>
 <body>
+	<% include navbar %>
 	<div class="container">
-		<% include navbar %>
 		<% users.map((name)=>{ %>
 			<li><%=name.name %></li>
 		<% }); %>
