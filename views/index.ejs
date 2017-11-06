@@ -6,10 +6,17 @@
 </head>
 <body>
 	<% include navbar %>
+	<% if(name != undefined){ %>
+		<h1>Welcome, <%=name %></h1>
+	<% } %>
+
+	<h1><%=band.title %></h1>
+	<img src="/images/<%=band.imageUrl %>" />
 	<div class="container">
-		<% users.map((name)=>{ %>
-			<li><%=name.name %></li>
-		<% }); %>
+		<div class="row">
+			<div class="col-sm-12">
+			</div>
+		</div>
 	</div>
 </body>
 </html>
