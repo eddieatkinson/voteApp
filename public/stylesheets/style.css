@@ -6,3 +6,24 @@ body {
 a {
   color: #00B7FF;
 }
+
+.band-image img{
+	width: 100%;
+}
+
+form{
+	width: 50vw;
+	margin: auto;
+}
+
+.form-group > label{
+	margin-top: 10px;
+}
+
+.login-btn{
+	margin-top: 13px;
+}
+
+.vote-btn{
+	margin: 13px;
+}

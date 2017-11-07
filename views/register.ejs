@@ -5,11 +5,15 @@
 	<% include head %>
 </head>
 <body>
+	<%loggedIn = false%>
 	<% include navbar %>
+	<% if(message == 'badUser'){%>
+		<h1>Please register.</h1>
+	<% } %>
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h1>Register</h1>
+				<h1 class="text-center">Register</h1>
 				<form action="/registerProcess" method="post">
 					<div class="form-group">
 						<label for="name">Name</label>

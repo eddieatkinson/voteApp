@@ -5,16 +5,28 @@
 	<% include head %>
 </head>
 <body>
+	<% var loggedIn = true%>
 	<% include navbar %>
+	<!-- <script type="text/javascript">
+		$(document).ready(()=>{
+			$('.reg-link, .login-link').hide();
+		});
+	</script> -->
 	<% if(name != undefined){ %>
 		<h1>Welcome, <%=name %></h1>
 	<% } %>
-
-	<h1><%=band.title %></h1>
-	<img src="/images/<%=band.imageUrl %>" />
+	<% if(message == "alreadyLoggedIn"){ %>
+		<h1>You are already logged in, <%=name%>!</h1>
+	<% } %>
 	<div class="container">
 		<div class="row">
-			<div class="col-sm-12">
+			<div class="col-sm-12 text-center">
+				<div class="col-sm-6 col-sm-offset-3 band-image">
+					<h1><%=band.title %></h1>
+					<img src="/images/<%=band.imageUrl %>" />
+					<a href="/vote/up/<%=band.id%>"><button class="btn btn-success vote-btn">Rocks!</button></a>
+					<a href="/vote/down/<%=band.id%>"><button class="btn btn-danger vote-btn">Not!</button></a>
+				</div>
 			</div>
 		</div>
 	</div>

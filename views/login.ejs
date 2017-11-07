@@ -5,18 +5,19 @@
 	<% include head %>
 </head>
 <body>
+	<%loggedIn = false%>
 	<% include navbar %>
 	<div class="container">
 		<div class="row">
 			<div class="col-sm-12">
-				<h1>Login</h1>
+				<h1 class="text-center">Login</h1>
 				<form action="/loginProcess" method="post">
 					<div class="form-group">
 						<label for="email">Email Address</label>
 						<input type="email" class="form-control" name="email" />
 						<label for="password">Password</label>
 						<input type="password" class="form-control" name="password" />
-						<button class="btn btn-primary">Login</button>
+						<button class="btn btn-primary login-btn">Login</button>
 					</div>
 				</form>
 			</div>
