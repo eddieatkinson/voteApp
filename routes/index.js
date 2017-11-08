@@ -1,9 +1,17 @@
 var express = require('express');
 var router = express.Router();
+var fs = require('fs'); // We need fs so we can read our multer file
 var config = require('../config/config.js');
 var mysql = require('mysql');
 var bcrypt = require('bcrypt-nodejs');
-// var loggedIn;
+
+var multer = require('multer');
+// Tell multer where to save the files it gets
+var uploadDir = multer({
+	dest: 'public/images'
+});
+// Specify the name of the file input to accept
+var nameOfFileField = uploadDir.single('imageToUpload');
 
 var connection = mysql.createConnection(config.db);
 
@@ -48,7 +56,7 @@ router.get('/', function(req, res, next) {
 			// out of bands
 			res.redirect('/standings?msg=complete');
 		}else{
-			console.log(bandObj);
+			// console.log(bandObj);
 			res.render('index', {
 				name: req.session.name,
 				band: bandObj,
@@ -60,11 +68,7 @@ router.get('/', function(req, res, next) {
 });
 
 router.get('/register', (req, res, next)=>{
-	if(req.session.name != undefined){
-		res.redirect('/?msg=alreadyLoggedIn');
-	}else{
-		res.render('register', { message:req.query.msg });
-	}
+	res.render('register', { message:req.query.msg });
 });
 
 router.post('/registerProcess', (req, res, next)=>{
@@ -91,11 +95,7 @@ router.post('/registerProcess', (req, res, next)=>{
 });
 
 router.get('/login', (req, res, next)=>{
-	if(req.session.name != undefined){
-		res.redirect('/?msg=alreadyLoggedIn');
-	}else{
-		res.render('login', {});
-	}
+	res.render('login', {});
 });
 
 router.post('/loginProcess', (req, res, next)=>{
@@ -139,8 +139,8 @@ router.get('/vote/:direction/:bandId', (req, res, next)=>{
 	// res.json(req.params);
 	var bandId = req.params.bandId;
 	var direction = req.params.direction;
-	var insertVoteQuery = `INSERT INTO votes (imageID, voteDirection, userID) VALUES (?, ?, ?);`;
-	connection.query(insertVoteQuery, [bandId, direction, req.session.uid], (error, results)=>{
+	var insertVoteQuery = `INSERT INTO votes (imageID, voteDirection, userID, ip_address) VALUES (?, ?, ?, ?);`;
+	connection.query(insertVoteQuery, [bandId, direction, req.session.uid, req.ip], (error, results)=>{
 		if(error){
 			throw error;
 		}else{
@@ -150,20 +150,74 @@ router.get('/vote/:direction/:bandId', (req, res, next)=>{
 });
 
 router.get('/standings', (req, res)=>{
+	if(req.session.name == undefined){
+		loggedIn = false
+	}else{
+		loggedIn = true
+	}
 	const standingsQuery = `
 		SELECT bands.title, bands.imageUrl, imageID, SUM(IF(voteDirection = 'up', 1, 0)) AS upVotes, SUM(IF(voteDirection = 'down', 1, 0)) AS downVotes, SUM(IF(voteDirection = 'up', 1, -1)) AS total FROM votes
  			INNER JOIN bands ON votes.imageID = bands.id
- 			GROUP BY imageID;
+ 			GROUP BY imageID ORDER BY upVotes desc;
 	`;
 	connection.query(standingsQuery, (error, results)=>{
+		results.map((band, i)=>{
+			if(band.upVotes / (band.upVotes + band.downVotes) > .8){
+				results[i].cls = "top-rated"
+			}else if(band.upVotes / (band.upVotes + band.downVotes) <= .5){
+				results[i].cls = "worst-rated"
+			}else{
+				results[i].cls = "middle"
+			}
+		});
 		if(error){
 			throw error;
 		}else{
 			res.render('standings', {
-				standingsResults: results
+				standingsResults: results,
+				loggedIn: loggedIn
 			});
+		console.log(results);
 		}
-	})
+	});
+});
+
+router.get('/uploadBand', (req, res)=>{
+	if(req.session.name == undefined){
+		loggedIn = false;
+		res.redirect('login')
+	}else{
+		loggedIn = true;
+		res.render('upload', {loggedIn: loggedIn});
+	}
+});
+
+router.post('/formSubmit', nameOfFileField, (req, res)=>{
+	console.log(req.file);
+	console.log(req.body);
+	var tmpPath = req.file.path;
+	var targetPath = `public/images/${req.file.originalname}`;
+	fs.readFile(tmpPath, (error, fileContents)=>{
+		if(error){
+			throw error
+		}
+		fs.writeFile(targetPath, fileContents, (error)=>{
+			if(error){
+				throw error
+			}
+			var insertQuery = `
+				INSERT INTO bands (imageUrl, title)
+					VALUES
+					(?, ?);`;
+			connection.query(insertQuery, [req.file.originalname, req.body.bandName], (dbError)=>{
+				if(dbError){
+					throw dbError;
+				}
+				res.redirect('/');
+			})
+		});
+	});
+	// res.json(req.body);
 });
 
 module.exports = router;

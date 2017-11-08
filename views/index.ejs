@@ -23,9 +23,9 @@
 			<div class="col-sm-12 text-center">
 				<div class="col-sm-6 col-sm-offset-3 band-image">
 					<h1><%=band.title %></h1>
-					<img src="/images/<%=band.imageUrl %>" />
-					<a href="/vote/up/<%=band.id%>"><button class="btn btn-success vote-btn">Rocks!</button></a>
-					<a href="/vote/down/<%=band.id%>"><button class="btn btn-danger vote-btn">Not!</button></a>
+					<img class="band-img" src="/images/<%=band.imageUrl %>" />
+					<a class="vote-thumb" href="/vote/up/<%=band.id%>"><img src="/images/thumbsUp.png"></a>
+					<a class="vote-thumb" href="/vote/down/<%=band.id%>"><img src="/images/thumbsDown.png"></a>
 				</div>
 			</div>
 		</div>

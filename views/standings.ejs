@@ -3,11 +3,64 @@
 <head>
 	<title>Standings</title>
 	<% include head %>
+
+	<script type="text/javascript">
+		$(document).ready(()=>{
+			var $grid = $('.grid').isotope({
+				// options
+			});
+			$('#all-bands').click(()=>{
+				$grid.isotope({
+					filter: ''
+				});
+			});
+			$('#top-rated').click(()=>{
+				$grid.isotope({
+					filter: '.top-rated'
+				});
+			});
+			$('#worst-rated').click(()=>{
+				$grid.isotope({
+					filter: '.worst-rated'
+				});
+			});
+		});
+	</script>
 </head>
 <body>
-	<% var loggedIn = true%>
 	<% include navbar %>
-	<h1>Welcome to the standings page!</h1>
-
+	<h1 class="standings-welcome text-center">Standings!!!</h1>
+	<% if(!loggedIn){ %>
+		<h4 class="text-center login-to-vote"><a href="/register">Register</a> or <a href="/login">login</a> to vote!</h4>
+	<% } %>
+	<div class="container">
+		<div class="row">
+			<div class="col-sm-8 col-sm-offset-2 text-center">
+				<button id="all-bands" class="btn btn-default">All Bands</button>
+				<button id="top-rated" class="btn btn-success">Top Rated</button>
+				<button id="worst-rated" class="btn btn-danger">Worst Rated</button>
+			</div>
+			<div class="col-sm-6 grid">
+				<% standingsResults.map((results)=>{ %>
+					<div class="standings-result <%=results.cls%>">
+						<div class="col-sm-6 col-sm-offset-1">
+							<img class="standings-img" src="/images/<%=results.imageUrl %>" />
+						</div>
+						<div class="col-sm-4">
+							<h4><%=results.title %></h4>
+							<div class="row col-sm-6">
+								<h4 class="num-votes"><%= results.upVotes%></h4>
+								<img src="/images/thumbsUp.png" />
+							</div>
+							<div class="row col-sm-6">
+								<h4 class="num-votes"><%= results.downVotes%></h4>
+								<img src="/images/thumbsDown.png" />
+							</div>
+						</div>
+					</div>
+				<% }); %>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

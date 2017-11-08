@@ -7,7 +7,7 @@ a {
   color: #00B7FF;
 }
 
-.band-image img{
+.band-img{
 	width: 100%;
 }
 
@@ -26,4 +26,31 @@ form{
 
 .vote-btn{
 	margin: 13px;
+}
+
+a > .vote-thumb{
+	width: 10vw;
+}
+
+.standings-welcome{
+	padding: 10px 0;
+}
+
+.login-to-vote{
+	color: red;
+}
+
+.standings-result{
+	display: block;
+}
+
+.standings-img{
+	/*display: block;*/
+	/*float: left;*/
+	width: 100%;
+	margin: 5px 0;
+}
+
+.num-votes{
+	display: inline-block;
 }
