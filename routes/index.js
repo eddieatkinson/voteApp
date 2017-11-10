@@ -177,7 +177,7 @@ router.get('/standings', (req, res)=>{
 				standingsResults: results,
 				loggedIn: loggedIn
 			});
-		console.log(results);
+		// console.log(results);
 		}
 	});
 });
@@ -218,6 +218,56 @@ router.post('/formSubmit', nameOfFileField, (req, res)=>{
 		});
 	});
 	// res.json(req.body);
+});
+
+router.get('/users', (req, res, next)=>{
+	// res.send("User page");
+	var message = "Please fill in fields to update your information."
+	if(req.query.msg == "emptyField"){
+		message = "Please fill out the fields.";
+	}
+	if(req.session.name == undefined){
+		res.redirect('/login');
+	}else{
+		var name = req.session.name;
+		var email = req.session.email;
+		res.render('users', {
+			message: message,
+			loggedIn: true,
+			email: email,
+			name: name
+		});
+	}
+});
+
+router.post('/userProcess', (req, res, next)=>{
+	var name = req.body.name;
+	var email = req.body.email;
+	var password = req.body.password;
+	// var message = "Please fill in fields to update your information."
+
+	if((email == "") || (name == "")){
+		res.redirect('/users?msg=emptyField');
+	}else{
+		if(password == ""){
+			var updateQuery = `UPDATE users SET
+				name = ?,
+				email = ?
+				WHERE id = ?;`;
+			var queryParams = [name, email, req.session.uid];
+		}else{
+			var updateQuery = `UPDATE users SET
+				name = ?,
+				email = ?,
+				password = ?
+				WHERE id = ?;`;
+			var hash = bcrypt.hashSync(password);
+			var queryParams = [name, email, hash, req.session.uid];
+		}
+		connection.query(updateQuery, queryParams, (error, results)=>{
+			res.redirect('/');
+		});
+	}
 });
 
 module.exports = router;
